@@ -32,3 +32,13 @@ func CreateUser(c *gin.Context) {
 
     c.JSON(http.StatusCreated, user)
 }
+
+func GetOneUser(c *gin.Context, id uint) {
+	user, err := services.GetOneUser(id)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, user)
+}

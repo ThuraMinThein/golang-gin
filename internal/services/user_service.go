@@ -12,3 +12,7 @@ func GetUsers() ([]models.User, error) {
 func CreateUser(user *models.User) error {
 	return repositories.CreateUser(user)
 }
+
+func GetOneUser(id uint) (models.User, error) {
+	return repositories.GetOneUser(id)
+}
