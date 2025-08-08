@@ -1,13 +1,15 @@
 package routes
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/ThuraMinThein/golang-gin/internal/middlewares"
+	"github.com/gin-gonic/gin"
+)
 
 func SetupRoutes(r *gin.Engine) {
 
-	user := r.Group("/users")
-	{
-		user.GET("/")
-		user.POST("/")
-	}
+	r.Use(middlewares.ErrorHandler())
+
+	authRoutes(r)
+	userRoutes(r);
 
 }

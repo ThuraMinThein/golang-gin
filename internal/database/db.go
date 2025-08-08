@@ -24,7 +24,7 @@ func Init() {
     var err error
     DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
     if err != nil {
-        log.Fatal("Failed to connect to database:", err)
+        log.Panic("Failed to connect to database:", err)
     }
 
     // Auto migrate models

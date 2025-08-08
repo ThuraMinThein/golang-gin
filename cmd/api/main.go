@@ -15,5 +15,6 @@ func main() {
 	r := gin.Default()
 
 	routes.SetupRoutes(r)
-	r.Run()
+
+	r.Run(":3333")
 }
