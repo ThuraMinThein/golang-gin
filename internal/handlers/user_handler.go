@@ -25,12 +25,15 @@ func CreateUser(c *gin.Context) {
         return
     }
 
-    if err := services.CreateUser(&user); err != nil {
+    userData, err := services.SignUp(&user); 
+	if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
 
-    c.JSON(http.StatusCreated, user)
+	c.SetCookie("refreshToken",userData.RefreshToken, 1, "/auth/refresh", "localhost", true, true)
+
+    c.JSON(http.StatusCreated, userData)
 }
 
 func GetOneUser(c *gin.Context, id uint) {

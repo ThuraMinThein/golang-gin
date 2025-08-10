@@ -9,10 +9,6 @@ func GetUsers() ([]models.User, error) {
 	return repositories.GetAllUser()
 }
 
-func CreateUser(user *models.User) error {
-	return repositories.CreateUser(user)
-}
-
 func GetOneUser(id uint) (models.User, error) {
 	return repositories.GetOneUser(id)
 }

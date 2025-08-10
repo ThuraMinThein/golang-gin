@@ -12,7 +12,7 @@ func GetAllUser() ([]models.User, error) {
 }
 
 func CreateUser(user *models.User) error {
-	return database.DB.Create(user).Error
+	return database.DB.Create(&user).Error
 }
 
 func GetOneUser(id uint) (models.User, error) {

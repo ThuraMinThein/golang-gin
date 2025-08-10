@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/ThuraMinThein/golang-gin/internal/helper"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,8 +19,10 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		jwt := tokenType[1]
+
+		err := helper.VerifyToken(jwt)
 		
-		if jwt != "abc" {
+		if err != nil {
 			unauthorizeError(c)
 			return
 		}
