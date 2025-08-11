@@ -9,9 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-
 func SignUp(c *gin.Context) {
-	var user models.User
+	var user models.UserWithToken
     if err := c.ShouldBindJSON(&user); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
@@ -41,14 +40,26 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	err = services.UpdateUser(loginData)
+	
+	c.SetCookie("refreshToken",loginData.RefreshToken, 7 * 24 * 60 * 60, "/", "localhost", false, true)
+	c.JSON(http.StatusOK, loginData)
+}
+
+func Refresh(c *gin.Context) {
+	refreshToken, err := c.Cookie("refreshToken") 
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.SetCookie("refreshToken",loginData.RefreshToken, 7 * 24 * 60 * 60, "/", "localhost", false, true)
-	c.JSON(http.StatusOK, loginData)
+	user, err := services.Refresh(refreshToken)
 
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.SetCookie("refreshToken",user.RefreshToken, 7 * 24 * 60 * 60, "/", "localhost", false, true)
+	c.JSON(http.StatusOK, user)
 }

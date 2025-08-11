@@ -7,10 +7,16 @@ import (
 	"github.com/ThuraMinThein/golang-gin/internal/repositories"
 )
 
-func SignUp(user *models.User) (*models.User, error) {
+func SignUp(user *models.UserWithToken) (*models.UserWithToken, error) {
 
 	hashedPassword, err := helper.Hash(user.Password)
 
+	if err != nil {
+		return nil, err
+	}
+
+	err = repositories.CreateUser(user)
+	
 	if err != nil {
 		return nil, err
 	}
@@ -23,8 +29,8 @@ func SignUp(user *models.User) (*models.User, error) {
 		return nil, err
 	}
 
-	err = repositories.CreateUser(user)
-	
+	err = UpdateUser(user.ID, user)
+
 	if err != nil {
 		return nil, err
 	}
@@ -32,15 +38,15 @@ func SignUp(user *models.User) (*models.User, error) {
 	return user,nil
 }
 
-func SignIn(loginDto *dto.LoginUserDto) (*models.User, error) {
+func SignIn(loginDto *dto.LoginUserDto) (*models.UserWithToken, error) {
 
 	user, err := repositories.GetUserByUsername(loginDto.Username)
 
 	if err != nil {
 		return nil, err
 	}
-
-	err = helper.VerifyHashed(loginDto.Password, user.Password)
+	
+	err = helper.VerifyHashed(user.Password, loginDto.Password)
 
 	if err != nil {
 		return nil, err
@@ -52,5 +58,41 @@ func SignIn(loginDto *dto.LoginUserDto) (*models.User, error) {
 		return nil, err
 	}
 
+	err = UpdateUser(user.ID, user)
+
+	if err != nil {
+		return nil, err
+	}
+
 	return user, nil
+}
+
+func Refresh(refreshToken string) (*models.UserWithToken, error) {
+
+	claims, err := helper.ParseToken(refreshToken)
+
+	if err != nil {
+		return nil, err
+	}
+
+	user, err := GetOneUser(claims.UserID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	user.AccessToken, user.RefreshToken, err = helper.GetTokens(user.ID, &user.Role)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = UpdateUser(user.ID, user)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+
 }

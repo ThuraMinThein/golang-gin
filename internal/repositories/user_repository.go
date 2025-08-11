@@ -5,28 +5,28 @@ import (
 	"github.com/ThuraMinThein/golang-gin/internal/models"
 )
 
-func GetAllUser() ([]*models.User, error) {
-	var users []*models.User
+func GetAllUser() ([]*models.UserWithToken, error) {
+	var users []*models.UserWithToken
 	err := database.DB.Find(&users).Error
 	return users, err
 }
 
-func CreateUser(user *models.User) error {
+func CreateUser(user *models.UserWithToken) error {
 	return database.DB.Create(&user).Error
 }
 
-func GetOneUser(id uint) (*models.User, error) {
-	var user *models.User
-	err :=database.DB.Find(&user, "ID = ?", id).Error
+func GetOneUser(id uint) (*models.UserWithToken, error) {
+	var user *models.UserWithToken
+	err :=database.DB.First(&user, "id = ?", id).Error
 	return user, err
 }
 
-func GetUserByUsername(username string) (*models.User, error) {
-	var user *models.User
-	err := database.DB.Find(&user, "Username = ?", username).Error
+func GetUserByUsername(username string) (*models.UserWithToken, error) {
+	var user *models.UserWithToken
+	err := database.DB.Find(&user, "user_name = ?", username).Error
 	return user, err
 }
 
-func UpdateUser(user *models.User) error {
-	return database.DB.Updates(user).Error
+func UpdateUser(user *models.UserWithToken) error {
+	return database.DB.Save(user).Error
 }

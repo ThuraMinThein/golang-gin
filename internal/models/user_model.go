@@ -12,6 +12,14 @@ type User struct {
 	Password		string 				`json:"-"`
 	UserName 		string				`json:"user_name"  binding:"required" gorm:"uniqueIndex"`
 	Role 			enums.UserRoleEnum	`json:"role" binding:"required"`
+}
+
+type UserWithToken struct {
+	User
 	AccessToken 	string				`json:"access_token" gorm:"-"`
 	RefreshToken 	string				`json:"refresh_token"`
+}
+
+func (UserWithToken) TableName() string {
+	return "users"
 }

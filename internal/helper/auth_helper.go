@@ -10,6 +10,12 @@ import (
 
 var secretKey = []byte(os.Getenv("JWT_SECRET_KEY"))
 
+type UserClaims struct {
+		jwt.RegisteredClaims
+		UserID   uint   `json:"user_id"`
+		Role string `json:"role"`
+	}
+
 func GetTokens(userId uint, role *enums.UserRoleEnum) (string, string, error) {
 	accessToken, err := getAccessToken(userId, role)
 	if err != nil {
@@ -26,7 +32,7 @@ func getAccessToken(userId uint, role *enums.UserRoleEnum) (string, error) {
 
 	claims := jwt.MapClaims{
 			"exp": jwt.NewNumericDate(time.Now().Add(15 * time.Minute)),
-			"userId": userId,
+			"user_id": userId,
 			"role": role,
 		}
 
@@ -39,7 +45,7 @@ func getRefreshToken(userId uint) (string, error) {
 
 	claims := jwt.MapClaims{
 			"exp": jwt.NewNumericDate(time.Now().Add(168 * time.Hour)),
-			"userId": userId,
+			"user_id": userId,
 		}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -61,4 +67,16 @@ func VerifyToken(tokenString string) error {
    }
   
    return nil
+}
+
+func ParseToken(tokenString string) (*UserClaims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &UserClaims{}, func(token *jwt.Token) (any, error) {
+		return secretKey, nil
+	})
+
+	claims, ok := token.Claims.(*UserClaims);
+	if ok {
+		return claims, nil
+	}
+	return nil, err
 }

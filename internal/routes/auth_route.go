@@ -10,6 +10,6 @@ func authRoutes(r *gin.Engine) {
 	{
 		auth.POST("/sign-up", handlers.SignUp)
 		auth.POST("/login", handlers.Login)
-		auth.POST("/refresh")
+		auth.POST("/refresh", handlers.Refresh)
 	}
 }
