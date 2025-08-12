@@ -20,12 +20,15 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		jwt := tokenType[1]
 
-		err := helper.VerifyToken(jwt)
+		claims, err := helper.ParseToken(jwt)
 		
 		if err != nil {
 			unauthorizeError(c)
 			return
 		}
+		
+		c.Set("user", claims)
+
 		
 		c.Next()
         

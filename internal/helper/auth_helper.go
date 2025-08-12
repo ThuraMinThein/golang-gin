@@ -53,22 +53,6 @@ func getRefreshToken(userId uint) (string, error) {
 	return ss, err
 }
 
-func VerifyToken(tokenString string) error {
-   token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-      return secretKey, nil
-   })
-  
-   if err != nil {
-      return err
-   }
-  
-   if !token.Valid {
-      return err
-   }
-  
-   return nil
-}
-
 func ParseToken(tokenString string) (*UserClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &UserClaims{}, func(token *jwt.Token) (any, error) {
 		return secretKey, nil
